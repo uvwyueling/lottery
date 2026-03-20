@@ -1,3 +1,4 @@
+import sys
 import random
 import tkinter as tk
 from tkinter import messagebox
@@ -17,6 +18,12 @@ ACCENT    = "#d97706"   # 强调色：橙
 BTN_DIS   = "#e8e5e0"   # 禁用按钮背景
 FG_DIS    = "#aaaaaa"   # 禁用按钮文字
 FG_SUB    = "#888888"   # 次要文字：灰
+
+# ── 跨平台字体 ─────────────────────────
+if sys.platform == "win32":
+    FONT = "Microsoft YaHei"
+else:
+    FONT = "PingFang SC"
 
 # ── 全局状态 ──────────────────────────
 total = None
@@ -97,13 +104,13 @@ frame_input.pack()
 
 label_total = tk.Label(
     frame_input, text="请输入试题总数：",
-    font=("Arial", 14), bg=BG, fg=FG
+    font=(FONT, 14), bg=BG, fg=FG
 )
 label_total.pack(side=tk.LEFT)
 
 entry_total = tk.Entry(
     frame_input,
-    font=("Arial", 14), width=6,
+    font=(FONT, 14), width=6,
     bg="#ffffff", fg=FG, insertbackground=FG,
     relief=tk.FLAT, bd=4
 )
@@ -111,7 +118,7 @@ entry_total.pack(side=tk.LEFT, padx=10)
 
 btn_confirm = tk.Label(
     frame_input, text="确认",
-    font=("Arial", 13), bg=ACCENT, fg="#faf9f7",
+    font=(FONT, 13), bg=ACCENT, fg="#faf9f7",
     padx=12, pady=5, cursor="hand2"
 )
 btn_confirm.pack(side=tk.LEFT)
@@ -120,7 +127,7 @@ btn_confirm.bind("<Button-1>", lambda e: on_confirm())
 # 大数字显示（视觉中心）
 label_result = tk.Label(
     root, text="—",
-    font=("Arial", 100, "bold"),
+    font=(FONT, 100, "bold"),
     bg=BG, fg=FG
 )
 label_result.pack(pady=0)
@@ -128,7 +135,7 @@ label_result.pack(pady=0)
 # 随机抽取按钮
 btn_draw = tk.Label(
     root, text="随机抽取",
-    font=("Arial", 18, "bold"),
+    font=(FONT, 18, "bold"),
     width=12,
     bg=BTN_DIS, fg=FG_DIS,
     pady=16, cursor="hand2"
@@ -139,7 +146,7 @@ btn_draw.bind("<Button-1>", lambda e: on_draw() if btn_draw["state"] != "disable
 # 已抽到记录
 label_drawn = tk.Label(
     root, text="已抽到：（无）",
-    font=("Arial", 13),
+    font=(FONT, 13),
     bg=BG, fg=FG_SUB,
     wraplength=460
 )
@@ -148,7 +155,7 @@ label_drawn.pack(pady=6)
 # 清空记录按钮（藏在右下角）
 btn_reset = tk.Button(
     root, text="清空记录",
-    font=("Arial", 8),
+    font=(FONT, 8),
     bg=BG, fg="#444444",
     relief=tk.FLAT,
     command=on_reset
@@ -159,10 +166,10 @@ def on_resize(event):
     if event.widget != root:
         return
     scale = event.width / BASE_WIDTH
-    label_result.config(font=("Arial", max(20, int(BASE_FONT_NUM * scale)), "bold"))
-    btn_draw.config(font=("Arial", max(10, int(BASE_FONT_BTN * scale)), "bold"))
-    label_drawn.config(font=("Arial", max(9, int(BASE_FONT_SUB * scale))))
-    label_total.config(font=("Arial", max(9, int(BASE_FONT_SM * scale))))
+    label_result.config(font=(FONT, max(20, int(BASE_FONT_NUM * scale)), "bold"))
+    btn_draw.config(font=(FONT, max(10, int(BASE_FONT_BTN * scale)), "bold"))
+    label_drawn.config(font=(FONT, max(9, int(BASE_FONT_SUB * scale))))
+    label_total.config(font=(FONT, max(9, int(BASE_FONT_SM * scale))))
 
 root.bind("<Configure>", on_resize)
 
