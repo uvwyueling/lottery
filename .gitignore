@@ -6,3 +6,6 @@ __pycache__/
 build/
 dist/
 *.spec
+
+# mac系统元数据文件
+.DS_Store
