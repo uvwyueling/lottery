@@ -2,6 +2,14 @@ import random
 import tkinter as tk
 from tkinter import messagebox
 
+# ── 颜色变量（Claude 浅色风格） ────────────
+BG        = "#faf9f7"   # 背景：暖米白
+FG        = "#1a1a1a"   # 主文字：深炭
+ACCENT    = "#d97706"   # 强调色：橙
+BTN_DIS   = "#e8e5e0"   # 禁用按钮背景
+FG_DIS    = "#aaaaaa"   # 禁用按钮文字
+FG_SUB    = "#888888"   # 次要文字：灰
+
 # ── 全局状态 ──────────────────────────
 total = None
 remaining = []        # 还没被抽到的数字
@@ -19,7 +27,7 @@ def reset():
     remaining = []
     drawn = []
 
-# ── UI 事件函数（连接按钮和逻辑） ──────
+# ── UI 事件函数 ────────────────────────
 def on_confirm():
     global total, remaining, drawn
     try:
@@ -27,18 +35,27 @@ def on_confirm():
         if n < 1 or n > 100:
             messagebox.showerror("错误", "请输入 1 到 100 之间的整数")
             return
-        total = n
+        total     = n
         remaining = list(range(1, total + 1))
-        drawn = []
+        drawn     = []
+
+        # 输入区变身：隐藏输入框和确认按钮，显示总题数文字
+        entry_total.pack_forget()
+        btn_confirm.pack_forget()
+        label_total.config(text=f"总题数为 {total}")
+
         label_result.config(text="—")
         label_drawn.config(text="已抽到：（无）")
-        btn_draw.config(state=tk.NORMAL)
+
+        # 激活抽取按钮
+        btn_draw.config(state=tk.NORMAL, bg=ACCENT, fg="#faf9f7")
+
     except ValueError:
         messagebox.showerror("错误", "请输入有效的整数")
 
 def on_draw():
     if not remaining:
-        messagebox.showinfo("提示", "所有题号已抽完。")
+        messagebox.showinfo("提示", "所有题目已抽完！")
         return
     draw()
     label_result.config(text=str(drawn[-1]))
@@ -46,54 +63,91 @@ def on_draw():
 
 def on_reset():
     reset()
+
+    # 恢复输入区
     entry_total.delete(0, tk.END)
+    entry_total.pack(side=tk.LEFT, padx=10)
+    btn_confirm.pack(side=tk.LEFT)
+    label_total.config(text="请输入总题数：")
+
     label_result.config(text="—")
     label_drawn.config(text="已抽到：（无）")
-    btn_draw.config(state=tk.DISABLED)
 
+    # 禁用抽取按钮
+    btn_draw.config(state=tk.DISABLED, bg=BTN_DIS, fg=FG_DIS)
 
 # ── 搭建舞台 ───────────────────────────
 root = tk.Tk()
 root.title("随机抽签")
-root.geometry("500x420")
+root.geometry("500x440")
 root.resizable(False, False)
+root.configure(bg=BG)
 
 # 输入区域
-frame_input = tk.Frame(root, pady=20)
+frame_input = tk.Frame(root, bg=BG, pady=24)
 frame_input.pack()
-tk.Label(frame_input, text="请输入总题数：", font=("Arial", 14)).pack(side=tk.LEFT)
-entry_total = tk.Entry(frame_input, font=("Arial", 14), width=6)
+
+label_total = tk.Label(
+    frame_input, text="请输入总题数：",
+    font=("Arial", 14), bg=BG, fg=FG
+)
+label_total.pack(side=tk.LEFT)
+
+entry_total = tk.Entry(
+    frame_input,
+    font=("Arial", 14), width=6,
+    bg="#ffffff", fg=FG, insertbackground=FG,
+    relief=tk.FLAT, bd=4
+)
 entry_total.pack(side=tk.LEFT, padx=10)
-tk.Button(frame_input, text="确认", font=("Arial", 14), command=on_confirm).pack(side=tk.LEFT)
+
+btn_confirm = tk.Label(
+    frame_input, text="确认",
+    font=("Arial", 13), bg=ACCENT, fg="#faf9f7",
+    padx=12, pady=5, cursor="hand2"
+)
+btn_confirm.pack(side=tk.LEFT)
+btn_confirm.bind("<Button-1>", lambda e: on_confirm())
 
 # 大数字显示（视觉中心）
-label_result = tk.Label(root, text="—", font=("Arial", 90, "bold"), fg="#333333")
-label_result.pack(pady=5)
-
-# 随机抽取按钮（大而显眼）
-btn_draw = tk.Button(
-    root, text="随机抽取", font=("Arial", 18, "bold"),
-    width=12, height=2, bg="#4CAF50", fg="white",
-    command=on_draw, state=tk.DISABLED
+label_result = tk.Label(
+    root, text="—",
+    font=("Arial", 100, "bold"),
+    bg=BG, fg=FG
 )
-btn_draw.pack(pady=10)
+label_result.pack(pady=0)
+
+# 随机抽取按钮
+btn_draw = tk.Label(
+    root, text="随机抽取",
+    font=("Arial", 18, "bold"),
+    width=12,
+    bg=BTN_DIS, fg=FG_DIS,
+    pady=16, cursor="hand2"
+)
+btn_draw.pack(pady=12)
+btn_draw.bind("<Button-1>", lambda e: on_draw() if btn_draw["state"] != "disabled" else None)
 
 # 已抽到记录
 label_drawn = tk.Label(
     root, text="已抽到：（无）",
-    font=("Arial", 11), fg="#888888", wraplength=460
+    font=("Arial", 13),
+    bg=BG, fg=FG_SUB,
+    wraplength=460
 )
-label_drawn.pack(pady=5)
+label_drawn.pack(pady=6)
 
-# 清空记录按钮（小、不显眼、藏在右下角）
+# 清空记录按钮（藏在右下角）
 btn_reset = tk.Button(
-    root, text="清空记录", font=("Arial", 12),
-    fg="#bbbbbb", relief=tk.FLAT, command=on_reset
+    root, text="清空记录",
+    font=("Arial", 8),
+    bg=BG, fg="#444444",
+    relief=tk.FLAT,
+    command=on_reset
 )
 btn_reset.place(relx=1.0, rely=1.0, x=-8, y=-8, anchor=tk.SE)
 
 root.mainloop()
-
 
 
 
