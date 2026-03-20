@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: 检出代码
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: 安装 Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.4.0
         with:
           python-version: "3.11"
 
@@ -25,7 +25,7 @@ jobs:
         run: pyinstaller --onefile --windowed --name lottery_picker src/lottery.py
 
       - name: 上传 EXE
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: lottery_picker_windows
           path: dist/lottery_picker.exe
