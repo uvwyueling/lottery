@@ -1,0 +1,6 @@
+nano requirements.txt
+```
+
+写入：
+```
+pyinstaller
