@@ -2,6 +2,14 @@ import random
 import tkinter as tk
 from tkinter import messagebox
 
+# ── 基础字号 ─────────────────────────────
+BASE_WIDTH    = 500    # 默认窗口宽度
+BASE_FONT_NUM = 100    # 大数字基础字号
+BASE_FONT_BTN = 18     # 抽取按钮基础字号
+BASE_FONT_SUB = 13     # 次要文字基础字号
+BASE_FONT_SM  = 14     # 输入区基础字号
+
+
 # ── 颜色变量（Claude 浅色风格） ────────────
 BG        = "#faf9f7"   # 背景：暖米白
 FG        = "#1a1a1a"   # 主文字：深炭
@@ -42,7 +50,7 @@ def on_confirm():
         # 输入区变身：隐藏输入框和确认按钮，显示总题数文字
         entry_total.pack_forget()
         btn_confirm.pack_forget()
-        label_total.config(text=f"总题数为 {total}")
+        label_total.config(text=f"本场面试共有 {total} 套试题")
 
         label_result.config(text="—")
         label_drawn.config(text="已抽到：（无）")
@@ -78,9 +86,9 @@ def on_reset():
 
 # ── 搭建舞台 ───────────────────────────
 root = tk.Tk()
-root.title("随机抽签")
+root.title("复试随机抽题")
 root.geometry("500x440")
-root.resizable(False, False)
+root.resizable(True, True)
 root.configure(bg=BG)
 
 # 输入区域
@@ -88,7 +96,7 @@ frame_input = tk.Frame(root, bg=BG, pady=24)
 frame_input.pack()
 
 label_total = tk.Label(
-    frame_input, text="请输入总题数：",
+    frame_input, text="请输入试题总数：",
     font=("Arial", 14), bg=BG, fg=FG
 )
 label_total.pack(side=tk.LEFT)
@@ -146,6 +154,17 @@ btn_reset = tk.Button(
     command=on_reset
 )
 btn_reset.place(relx=1.0, rely=1.0, x=-8, y=-8, anchor=tk.SE)
+
+def on_resize(event):
+    if event.widget != root:
+        return
+    scale = event.width / BASE_WIDTH
+    label_result.config(font=("Arial", max(20, int(BASE_FONT_NUM * scale)), "bold"))
+    btn_draw.config(font=("Arial", max(10, int(BASE_FONT_BTN * scale)), "bold"))
+    label_drawn.config(font=("Arial", max(9, int(BASE_FONT_SUB * scale))))
+    label_total.config(font=("Arial", max(9, int(BASE_FONT_SM * scale))))
+
+root.bind("<Configure>", on_resize)
 
 root.mainloop()
 
